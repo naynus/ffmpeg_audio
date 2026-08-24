@@ -12,11 +12,24 @@ spksrc_ffmpeg_version="$(
   sed -n 's/^spksrc_ffmpeg_version=//p' build-manifest.txt
 )"
 spksrc_ref="$(sed -n 's/^spksrc_ref=//p' build-manifest.txt)"
+
+# Set versions in the two FFmpeg recipes instead of passing PKG_VERS on the
+# make command line. Command-line variables propagate into dependency builds
+# and would otherwise make packages such as LAME use the FFmpeg version.
+sed -i -E \
+  "s/^PKG_VERS[[:space:]]*\\?=[[:space:]]*.*/PKG_VERS = $FFMPEG_VERSION/" \
+  cross/ffmpeg8/Makefile
+sed -i -E \
+  "s/^SPK_VERS[[:space:]]*\\?=[[:space:]]*.*/SPK_VERS = $FFMPEG_VERSION/" \
+  spk/ffmpeg8/Makefile
+
+grep -Fqx "PKG_VERS = $FFMPEG_VERSION" cross/ffmpeg8/Makefile
+grep -Fqx "SPK_VERS = $FFMPEG_VERSION" spk/ffmpeg8/Makefile
+
 if [ "$FFMPEG_VERSION" != "$spksrc_ffmpeg_version" ]; then
   echo "Regenerating source digest for FFmpeg $FFMPEG_VERSION"
   env -u ARCH -u TCVERSION make --no-print-directory \
     -C cross/ffmpeg8 \
-    PKG_VERS="$FFMPEG_VERSION" \
     digests
 fi
 
@@ -24,8 +37,6 @@ make --no-print-directory \
   -C spk/ffmpeg8 \
   ARCH="$ARCH" \
   TCVERSION="$TCVERSION" \
-  SPK_VERS="$FFMPEG_VERSION" \
-  PKG_VERS="$FFMPEG_VERSION" \
   SPK_REV="$SPK_REV" \
   all
 
