@@ -9,8 +9,8 @@ PLIST_TRANSFORM = grep -v '^bin:bin/lame$$'
 
 MIN_GCC_VERSION = 4.9
 
-MAINTAINER = ffmpeg8-audio-builder
-MAINTAINER_URL = https://github.com/SynoCommunity/spksrc
+MAINTAINER = Naynus
+MAINTAINER_URL = https://github.com/naynus/ffmpeg_audio
 DISABLE_GITHUB_MAINTAINER = 1
 DESCRIPTION = CPU-only FFmpeg $(SPK_VERS) with audio processing and audio extraction support. Video codecs and hardware acceleration are disabled.
 DESCRIPTION_FRE = FFmpeg $(SPK_VERS) sans GPU, avec traitement et extraction audio. Les codecs video et l acceleration materielle sont desactives.
