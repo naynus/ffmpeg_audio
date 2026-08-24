@@ -23,6 +23,7 @@ fi
 mkdir -p spksrc/spk/ffmpeg8 spksrc/cross/ffmpeg8
 cp recipes/spk/ffmpeg8/Makefile spksrc/spk/ffmpeg8/Makefile
 cp recipes/cross/ffmpeg8/Makefile spksrc/cross/ffmpeg8/Makefile
+cp recipes/cross/ffmpeg8/PLIST spksrc/cross/ffmpeg8/PLIST
 
 {
   printf 'spksrc_ref=%s\n' "$SPKSRC_REF"
