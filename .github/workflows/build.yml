@@ -1,0 +1,98 @@
+name: Build minimal FFmpeg 8 SPK
+
+"on":
+  workflow_dispatch:
+    inputs:
+      ffmpeg_version:
+        description: FFmpeg 8 release to build, or latest
+        required: true
+        default: latest
+      spksrc_ref:
+        description: SynoCommunity spksrc branch, tag, or commit
+        required: true
+        default: master
+      arch:
+        description: Synology architecture
+        required: true
+        default: x64
+        type: choice
+        options:
+          - x64
+          - aarch64
+          - armv7
+          - evansport
+          - comcerto2k
+          - qoriq
+      tcversion:
+        description: DSM toolchain version
+        required: true
+        default: "7.2"
+        type: choice
+        options:
+          - "7.3"
+          - "7.2"
+          - "7.1"
+          - "7.0"
+          - "6.2.4"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: "${{ inputs.arch }} / DSM ${{ inputs.tcversion }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      ARCH: ${{ inputs.arch }}
+      TCVERSION: ${{ inputs.tcversion }}
+      SPKSRC_REF: ${{ inputs.spksrc_ref }}
+      SPK_REV: "100"
+    steps:
+      - name: Checkout build overlay
+        uses: actions/checkout@v5
+
+      - name: Resolve FFmpeg version
+        id: resolve-version
+        shell: bash
+        env:
+          REQUESTED_FFMPEG_VERSION: ${{ inputs.ffmpeg_version }}
+        run: |
+          version="$REQUESTED_FFMPEG_VERSION"
+          if [ "$version" = "latest" ]; then
+            version="$(
+              curl --fail --silent --show-error \
+                https://ffmpeg.org/releases/ |
+              sed -nE 's/.*ffmpeg-(8\.[0-9]+(\.[0-9]+)?)\.tar\.bz2.*/\1/p' |
+              sort -V |
+              tail -n 1
+            )"
+          fi
+          if [[ ! "$version" =~ ^8\.[0-9]+(\.[0-9]+)?$ ]]; then
+            echo "Unsupported FFmpeg 8 version: $version" >&2
+            exit 1
+          fi
+          echo "Building FFmpeg $version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare SynoCommunity spksrc
+        shell: bash
+        run: bash scripts/prepare-spksrc.sh
+
+      - name: Build SPK with SynoCommunity toolchain
+        uses: docker://ghcr.io/synocommunity/spksrc:latest
+        with:
+          entrypoint: /bin/bash
+          args: /github/workspace/scripts/build-in-container.sh
+        env:
+          FFMPEG_VERSION: ${{ steps.resolve-version.outputs.version }}
+
+      - name: Upload SPK
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg8-${{ steps.resolve-version.outputs.version }}-${{ inputs.arch }}-${{ inputs.tcversion }}
+          path: |
+            spksrc/packages/*.spk
+            spksrc/build-manifest.txt
+          if-no-files-found: error
