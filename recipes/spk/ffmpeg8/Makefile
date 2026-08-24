@@ -4,6 +4,7 @@ SPK_MINOR_VERS = $(firstword $(subst ., ,$(SPK_VERS)))
 SPK_REV ?= 100
 
 DEPENDS = cross/ffmpeg8
+PLIST_TRANSFORM = grep -v '^bin:bin/lame$$'
 
 MIN_GCC_VERSION = 4.9
 
