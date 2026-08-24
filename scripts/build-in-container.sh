@@ -4,7 +4,7 @@ set -euo pipefail
 : "${ARCH:?ARCH is required}"
 : "${TCVERSION:?TCVERSION is required}"
 : "${FFMPEG_VERSION:?FFMPEG_VERSION is required}"
-: "${SPK_REV:=100}"
+: "${SPK_REV:=102}"
 
 cd /github/workspace/spksrc
 
@@ -81,6 +81,60 @@ if [ "$ARCH" = "x64" ]; then
       exit 1
     fi
   done
+
+  muxers="$("$validation_dir/payload/bin/ffmpeg" -hide_banner -muxers)"
+  for muxer in ipod mov mp4; do
+    if ! awk -v name="$muxer" '$2 == name { found=1 } END { exit !found }' \
+      <<< "$muxers"; then
+      echo "Required MOV-family muxer is missing: $muxer" >&2
+      exit 1
+    fi
+  done
+
+  ipod_options="$(
+    "$validation_dir/payload/bin/ffmpeg" -hide_banner -h muxer=ipod
+  )"
+  grep -Fq "movflags" <<< "$ipod_options"
+  grep -Fq "faststart" <<< "$ipod_options"
+
+  python3 - "$validation_dir/input.wav" <<'PY'
+import sys
+import wave
+
+with wave.open(sys.argv[1], "wb") as output:
+    output.setnchannels(2)
+    output.setsampwidth(2)
+    output.setframerate(44100)
+    output.writeframes(b"\0" * 44100)
+PY
+
+  "$validation_dir/payload/bin/ffmpeg" \
+    -hide_banner -loglevel error -nostdin -y \
+    -i "$validation_dir/input.wav" \
+    -map 0:a:0 -c:a aac -b:a 256k \
+    -movflags +faststart \
+    "$validation_dir/output.m4a"
+
+  probe_output="$(
+    "$validation_dir/payload/bin/ffprobe" \
+      -v error \
+      -select_streams a:0 \
+      -show_entries format=format_name:stream=codec_name \
+      -of default=noprint_wrappers=1 \
+      "$validation_dir/output.m4a"
+  )"
+  grep -Fqx "codec_name=aac" <<< "$probe_output"
+  grep -Eq '^format_name=.*(mov|mp4|m4a)' <<< "$probe_output"
+
+  python3 - "$validation_dir/output.m4a" <<'PY'
+import sys
+
+data = open(sys.argv[1], "rb").read()
+moov = data.find(b"moov")
+mdat = data.find(b"mdat")
+if moov < 0 or mdat < 0 or moov > mdat:
+    raise SystemExit("M4A faststart validation failed")
+PY
 fi
 
 {

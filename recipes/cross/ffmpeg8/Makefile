@@ -71,7 +71,6 @@ CONFIGURE_ARGS += --enable-bsf=aac_adtstoasc,null
 CONFIGURE_ARGS += --enable-filter=acopy,afade,afifo,afir,aformat,amix,anull,apad,apulsator,aresample,aselect,asetnsamples,asetpts,asetrate,atempo,atrim,bandpass,bandreject,bass,biquad,channelmap,channelsplit,compand,acompressor,dcshift,dynaudnorm,ebur128,equalizer,extrastereo,firequalizer,highpass,join,lowpass,loudnorm,pan,replaygain,sidechaincompress,silencedetect,silenceremove,stereotools,stereowiden,tiltshelf,treble,volume
 # The ffmpeg CLI selects these core filters even in an audio-focused build.
 CONFIGURE_ARGS += --enable-filter=crop,format,hflip,null,rotate,transpose,trim,vflip
-CONFIGURE_ARGS += --disable-bsf=pgs_frame_merge,vp9_superframe
 
 DEPENDS += cross/lame
 DEPENDS += cross/zlib
