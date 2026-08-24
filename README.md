@@ -38,10 +38,16 @@ The package contains:
 
 Run **Actions -> Build minimal FFmpeg 8 SPK -> Run workflow** and select:
 
-- `ffmpeg_version`: `latest` or a specific FFmpeg 8 release, such as `8.1.2`
+- `ffmpeg_version`: `spksrc`, `latest`, or a specific FFmpeg 8 release
 - `spksrc_ref`: a branch, tag, or commit from SynoCommunity's `spksrc`
 - `arch`: the Synology toolchain architecture, such as `x64`
 - `tcversion`: the DSM toolchain version, such as `7.2`
+
+`spksrc` is the recommended FFmpeg setting. It builds the FFmpeg version
+integrated by the selected `spksrc` revision, so its source digest and patches
+are expected to match. `latest` follows the newest official FFmpeg 8 release
+and regenerates its source digest, but the build can fail if the current
+`spksrc` patches have not yet been updated for that release.
 
 The workflow uploads the resulting SPK and a build manifest as artifacts.
 Use the architecture and DSM version matching the NAS that will install the
@@ -51,6 +57,31 @@ and its shared libraries are architecture-specific.
 The workflow clones `spksrc` at build time and overlays the two Makefiles from
 this repository. This keeps the toolchain and packaging framework upstream
 while keeping the FFmpeg feature selection under version control here.
+
+### Scheduled updates
+
+The workflow runs automatically every Monday at 03:17 UTC. Scheduled builds
+default to:
+
+```text
+FFMPEG_VERSION=spksrc
+SPKSRC_REF=master
+SYNOLOGY_ARCH=x64
+SYNOLOGY_TCVERSION=7.2
+```
+
+These defaults can be overridden without editing the workflow. In the GitHub
+repository, open **Settings -> Secrets and variables -> Actions -> Variables**
+and create any of:
+
+- `FFMPEG_VERSION`: `spksrc`, `latest`, or a specific FFmpeg 8 version
+- `SPKSRC_REF`: normally `master`, or a tag/commit for reproducibility
+- `SYNOLOGY_ARCH`: for example `x64` or `aarch64`
+- `SYNOLOGY_TCVERSION`: for example `7.2` or `7.3`
+
+The DSM toolchain target remains pinned intentionally. Updating a NAS from DSM
+7.2 to 7.3 should be followed by changing `SYNOLOGY_TCVERSION`; automatically
+changing it could create an SPK that cannot be installed on the current DSM.
 
 ## Local build
 
@@ -76,11 +107,11 @@ architecture-specific `make` targets in its `spksrc` repository.
 
 ## Updating FFmpeg
 
-When moving to a newer FFmpeg release, first run the workflow with the new
-version. If upstream `spksrc` has not yet added compatible patches or the
-release changes configure behavior, the build may need a small recipe update.
-The workflow intentionally fails instead of silently falling back to the
-video-enabled upstream recipe.
+Scheduled builds follow the selected `spksrc` revision and its integrated
+FFmpeg version automatically. To test a newer official FFmpeg release before
+`spksrc` adopts it, manually run the workflow with `ffmpeg_version=latest`.
+If patches or configure behavior are incompatible, the workflow intentionally
+fails instead of silently falling back to the video-enabled upstream recipe.
 
 ## Scope
 

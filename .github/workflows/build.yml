@@ -1,12 +1,14 @@
 name: Build minimal FFmpeg 8 SPK
 
 "on":
+  schedule:
+    - cron: "17 3 * * 1"
   workflow_dispatch:
     inputs:
       ffmpeg_version:
-        description: FFmpeg 8 release to build, or latest
+        description: Use spksrc, latest, or a specific FFmpeg 8 release
         required: true
-        default: latest
+        default: spksrc
       spksrc_ref:
         description: SynoCommunity spksrc branch, tag, or commit
         required: true
@@ -40,26 +42,38 @@ permissions:
 
 jobs:
   build:
-    name: "${{ inputs.arch }} / DSM ${{ inputs.tcversion }}"
+    name: >-
+      ${{ inputs.arch || vars.SYNOLOGY_ARCH || 'x64' }} /
+      DSM ${{ inputs.tcversion || vars.SYNOLOGY_TCVERSION || '7.2' }}
     runs-on: ubuntu-latest
     timeout-minutes: 350
     env:
-      ARCH: ${{ inputs.arch }}
-      TCVERSION: ${{ inputs.tcversion }}
-      SPKSRC_REF: ${{ inputs.spksrc_ref }}
+      ARCH: ${{ inputs.arch || vars.SYNOLOGY_ARCH || 'x64' }}
+      TCVERSION: ${{ inputs.tcversion || vars.SYNOLOGY_TCVERSION || '7.2' }}
+      SPKSRC_REF: ${{ inputs.spksrc_ref || vars.SPKSRC_REF || 'master' }}
       SPK_REV: "100"
     steps:
       - name: Checkout build overlay
         uses: actions/checkout@v5
 
+      - name: Prepare SynoCommunity spksrc
+        shell: bash
+        run: bash scripts/prepare-spksrc.sh
+
       - name: Resolve FFmpeg version
         id: resolve-version
         shell: bash
         env:
-          REQUESTED_FFMPEG_VERSION: ${{ inputs.ffmpeg_version }}
+          REQUESTED_FFMPEG_VERSION: >-
+            ${{ inputs.ffmpeg_version || vars.FFMPEG_VERSION || 'spksrc' }}
         run: |
           version="$REQUESTED_FFMPEG_VERSION"
-          if [ "$version" = "latest" ]; then
+          if [ "$version" = "spksrc" ]; then
+            version="$(
+              sed -n 's/^spksrc_ffmpeg_version=//p' \
+                spksrc/build-manifest.txt
+            )"
+          elif [ "$version" = "latest" ]; then
             version="$(
               curl --fail --silent --show-error \
                 https://ffmpeg.org/releases/ |
@@ -75,10 +89,6 @@ jobs:
           echo "Building FFmpeg $version"
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-      - name: Prepare SynoCommunity spksrc
-        shell: bash
-        run: bash scripts/prepare-spksrc.sh
-
       - name: Build SPK with SynoCommunity toolchain
         uses: docker://ghcr.io/synocommunity/spksrc:latest
         with:
@@ -91,7 +101,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ffmpeg8-${{ steps.resolve-version.outputs.version }}-${{ inputs.arch }}-${{ inputs.tcversion }}
+          name: ffmpeg8-${{ steps.resolve-version.outputs.version }}-${{ env.ARCH }}-${{ env.TCVERSION }}
           path: |
             spksrc/packages/*.spk
             spksrc/build-manifest.txt
