@@ -36,13 +36,55 @@ The package contains:
 
 ## GitHub Actions
 
-Run **Actions -> Build minimal FFmpeg 8 SPK -> Run workflow** and select:
+### One-click release
+
+The workflow can build the SPK and publish it as a GitHub Release in one run:
+
+1. Open **Actions -> Build minimal FFmpeg 8 SPK -> Run workflow**.
+2. Select the build settings. `publish_release` is enabled by default for
+   manual runs.
+3. Leave `release_tag` as `auto`, or enter a custom tag.
+4. Click **Run workflow**.
+
+An automatic tag has this format:
+
+```text
+v<ffmpeg-version>-r<spk-revision>-<architecture>-dsm<toolchain-version>
+```
+
+For example:
+
+```text
+v8.1.2-r102-x64-dsm7.2
+```
+
+The release contains the generated `.spk` file and `build-manifest.txt`.
+Push and scheduled runs continue to upload Actions artifacts only; they do
+not publish releases.
+
+Available manual-run release options:
+
+- `publish_release`: enable or disable GitHub Release publication
+- `release_tag`: use `auto` or provide a custom release tag
+- `release_draft`: create a draft release for review
+- `release_prerelease`: mark the release as a pre-release
+- `generate_release_notes`: let GitHub generate release notes
+
+The workflow requires the repository's Actions token to have permission to
+write repository contents. This is configured in the workflow with
+`contents: write`; the account running the workflow must also have permission
+to create releases.
+
+### Build options
+
+The build inputs are:
 
 - `ffmpeg_version`: choose the supported `spksrc` recipe or experimental
   `latest` upstream release
 - `spksrc_ref`: a branch, tag, or commit from SynoCommunity's `spksrc`
 - `arch`: the Synology toolchain architecture, such as `x64`
 - `tcversion`: the DSM toolchain version, such as `7.2`
+- `spk_rev`: the Synology package revision number
 
 `spksrc` is the recommended FFmpeg setting. It builds the FFmpeg version
 integrated by the selected `spksrc` revision, so its source digest and patches

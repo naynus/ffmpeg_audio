@@ -47,9 +47,39 @@ name: Build minimal FFmpeg 8 SPK
           - "7.1"
           - "7.0"
           - "6.2.4"
+      spk_rev:
+        description: SPK revision number
+        required: true
+        default: "102"
+        type: string
+      publish_release:
+        description: Create a GitHub Release and attach the generated SPK
+        required: true
+        default: true
+        type: boolean
+      release_tag:
+        description: Release tag, or auto for a generated tag
+        required: true
+        default: auto
+        type: string
+      release_draft:
+        description: Create the release as a draft
+        required: true
+        default: false
+        type: boolean
+      release_prerelease:
+        description: Mark the release as a pre-release
+        required: true
+        default: false
+        type: boolean
+      generate_release_notes:
+        description: Generate release notes from GitHub
+        required: true
+        default: true
+        type: boolean
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -62,7 +92,7 @@ jobs:
       ARCH: ${{ inputs.arch || vars.SYNOLOGY_ARCH || 'x64' }}
       TCVERSION: ${{ inputs.tcversion || vars.SYNOLOGY_TCVERSION || '7.2' }}
       SPKSRC_REF: ${{ inputs.spksrc_ref || vars.SPKSRC_REF || 'master' }}
-      SPK_REV: "102"
+      SPK_REV: ${{ inputs.spk_rev || vars.SPK_REV || '102' }}
     steps:
       - name: Checkout build overlay
         uses: actions/checkout@v5
@@ -117,3 +147,56 @@ jobs:
             spksrc/packages/*.spk
             spksrc/build-manifest.txt
           if-no-files-found: error
+
+      - name: Publish GitHub release
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG_INPUT: ${{ inputs.release_tag || 'auto' }}
+          RELEASE_DRAFT: ${{ inputs.release_draft || false }}
+          RELEASE_PRERELEASE: ${{ inputs.release_prerelease || false }}
+          GENERATE_RELEASE_NOTES: ${{ inputs.generate_release_notes }}
+        run: |
+          set -euo pipefail
+
+          version="${{ steps.resolve-version.outputs.version }}"
+          release_tag="$RELEASE_TAG_INPUT"
+          if [ "$release_tag" = "auto" ]; then
+            release_tag="v${version}-r${SPK_REV}-${ARCH}-dsm${TCVERSION}"
+          fi
+
+          if ! git check-ref-format "refs/tags/$release_tag"; then
+            echo "Invalid release tag: $release_tag" >&2
+            exit 1
+          fi
+
+          mapfile -t spk_files < <(
+            find spksrc/packages -maxdepth 1 -type f -name '*.spk' -print |
+              sort
+          )
+          if [ "${#spk_files[@]}" -eq 0 ]; then
+            echo "No SPK package was found for release upload" >&2
+            exit 1
+          fi
+
+          release_title="FFmpeg ${version} Audio SPK - ${ARCH} / DSM ${TCVERSION}"
+          release_args=(
+            "$release_tag"
+            "${spk_files[@]}"
+            spksrc/build-manifest.txt
+            --target "$GITHUB_SHA"
+            --title "$release_title"
+          )
+
+          if [ "$RELEASE_DRAFT" = "true" ]; then
+            release_args+=(--draft)
+          fi
+          if [ "$RELEASE_PRERELEASE" = "true" ]; then
+            release_args+=(--prerelease)
+          fi
+          if [ "$GENERATE_RELEASE_NOTES" = "true" ]; then
+            release_args+=(--generate-notes)
+          fi
+
+          gh release create "${release_args[@]}"
