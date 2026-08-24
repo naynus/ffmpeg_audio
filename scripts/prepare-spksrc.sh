@@ -22,7 +22,7 @@ fi
 
 mkdir -p spksrc/spk/ffmpeg8/src spksrc/cross/ffmpeg8
 cp recipes/spk/ffmpeg8/Makefile spksrc/spk/ffmpeg8/Makefile
-cp recipes/spk/ffmpeg8/src/ffmpeg8.svg spksrc/spk/ffmpeg8/src/ffmpeg8.svg
+cp recipes/spk/ffmpeg8/src/ffmpeg8.png spksrc/spk/ffmpeg8/src/ffmpeg8.png
 cp recipes/cross/ffmpeg8/Makefile spksrc/cross/ffmpeg8/Makefile
 cp recipes/cross/ffmpeg8/PLIST spksrc/cross/ffmpeg8/PLIST
 
