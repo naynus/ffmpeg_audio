@@ -11,7 +11,7 @@ MAINTAINER = ffmpeg8-audio-builder
 MAINTAINER_URL = https://github.com/SynoCommunity/spksrc
 DISABLE_GITHUB_MAINTAINER = 1
 DESCRIPTION = CPU-only FFmpeg $(SPK_VERS) with audio processing and audio extraction support. Video codecs and hardware acceleration are disabled.
-DESCRIPTION_FRE = FFmpeg $(SPK_VERS) sans GPU, avec traitement et extraction audio. Les codecs vidéo et l'accélération matérielle sont désactivés.
+DESCRIPTION_FRE = FFmpeg $(SPK_VERS) sans GPU, avec traitement et extraction audio. Les codecs video et l acceleration materielle sont desactives.
 DISPLAY_NAME = FFmpeg $(SPK_MINOR_VERS) Audio
 STARTABLE = no
 
