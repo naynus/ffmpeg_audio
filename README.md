@@ -38,7 +38,7 @@ The package contains:
 
 Run **Actions -> Build minimal FFmpeg 8 SPK -> Run workflow** and select:
 
-- `ffmpeg_version`: `spksrc`, `latest`, or a specific FFmpeg 8 release
+- `ffmpeg_version`: choose `spksrc`, `latest`, or a published FFmpeg 8 release
 - `spksrc_ref`: a branch, tag, or commit from SynoCommunity's `spksrc`
 - `arch`: the Synology toolchain architecture, such as `x64`
 - `tcversion`: the DSM toolchain version, such as `7.2`
@@ -48,6 +48,12 @@ integrated by the selected `spksrc` revision, so its source digest and patches
 are expected to match. `latest` follows the newest official FFmpeg 8 release
 and regenerates its source digest, but the build can fail if the current
 `spksrc` patches have not yet been updated for that release.
+
+The manual workflow form lists all FFmpeg 8 releases published when the
+workflow file was last updated. GitHub Actions requires `choice` options to be
+declared statically in the workflow YAML, so newly published versions do not
+appear as exact choices automatically. The `latest` choice still resolves the
+newest available FFmpeg 8 release dynamically at build time.
 
 The workflow uploads the resulting SPK and a build manifest as artifacts.
 Use the architecture and DSM version matching the NAS that will install the
