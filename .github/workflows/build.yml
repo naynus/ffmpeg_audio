@@ -103,7 +103,7 @@ jobs:
 
       - name: Upload SPK
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ffmpeg8-${{ steps.resolve-version.outputs.version }}-${{ env.ARCH }}-${{ env.TCVERSION }}
           path: |
