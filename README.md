@@ -38,7 +38,8 @@ The package contains:
 
 Run **Actions -> Build minimal FFmpeg 8 SPK -> Run workflow** and select:
 
-- `ffmpeg_version`: choose `spksrc`, `latest`, or a published FFmpeg 8 release
+- `ffmpeg_version`: choose the supported `spksrc` recipe or experimental
+  `latest` upstream release
 - `spksrc_ref`: a branch, tag, or commit from SynoCommunity's `spksrc`
 - `arch`: the Synology toolchain architecture, such as `x64`
 - `tcversion`: the DSM toolchain version, such as `7.2`
@@ -49,11 +50,11 @@ are expected to match. `latest` follows the newest official FFmpeg 8 release
 and regenerates its source digest, but the build can fail if the current
 `spksrc` patches have not yet been updated for that release.
 
-The manual workflow form lists all FFmpeg 8 releases published when the
-workflow file was last updated. GitHub Actions requires `choice` options to be
-declared statically in the workflow YAML, so newly published versions do not
-appear as exact choices automatically. The `latest` choice still resolves the
-newest available FFmpeg 8 release dynamically at build time.
+An `spksrc` revision normally supports the single FFmpeg version pinned by its
+`cross/ffmpeg8` recipe. It does not publish a compatibility list containing
+every older FFmpeg 8 tag. For this reason, the manual form does not present
+upstream release tags as supported choices. Select `spksrc` and pin
+`spksrc_ref` to a commit when a reproducible, recipe-matched build is required.
 
 The workflow uploads the resulting SPK and a build manifest as artifacts.
 Use the architecture and DSM version matching the NAS that will install the
@@ -80,7 +81,8 @@ These defaults can be overridden without editing the workflow. In the GitHub
 repository, open **Settings -> Secrets and variables -> Actions -> Variables**
 and create any of:
 
-- `FFMPEG_VERSION`: `spksrc`, `latest`, or a specific FFmpeg 8 version
+- `FFMPEG_VERSION`: `spksrc` (supported), `latest` (experimental), or an
+  explicit FFmpeg 8 version override for compatibility testing
 - `SPKSRC_REF`: normally `master`, or a tag/commit for reproducibility
 - `SYNOLOGY_ARCH`: for example `x64` or `aarch64`
 - `SYNOLOGY_TCVERSION`: for example `7.2` or `7.3`

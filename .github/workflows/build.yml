@@ -6,20 +6,13 @@ name: Build minimal FFmpeg 8 SPK
   workflow_dispatch:
     inputs:
       ffmpeg_version:
-        description: FFmpeg 8 source version (spksrc is recommended)
+        description: spksrc=supported recipe; latest=experimental upstream
         required: true
         default: spksrc
         type: choice
         options:
           - spksrc
           - latest
-          - 8.1.2
-          - 8.1.1
-          - "8.1"
-          - 8.0.3
-          - 8.0.2
-          - 8.0.1
-          - "8.0"
       spksrc_ref:
         description: SynoCommunity spksrc branch, tag, or commit
         required: true
