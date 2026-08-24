@@ -59,7 +59,7 @@ CONFIGURE_ARGS += --enable-decoder=aac,ac3,alac,ape,bmp,comfortnoise,cook,dca,ea
 # Native audio encoders. External codec libraries are intentionally omitted
 # except for LAME, which NaviAgent explicitly invokes for MP3 conversion.
 CONFIGURE_ARGS += --enable-encoder=aac,ac3,eac3,flac,mp2,pcm_alaw,pcm_f16be,pcm_f16le,pcm_f24be,pcm_f24le,pcm_f32be,pcm_f32le,pcm_f64be,pcm_f64le,pcm_mulaw,pcm_s16be,pcm_s16le,pcm_s24be,pcm_s24le,pcm_s32be,pcm_s32le,pcm_s64be,pcm_u8
-CONFIGURE_ARGS += --enable-encoder=png
+CONFIGURE_ARGS += --enable-encoder=libmp3lame,png
 CONFIGURE_ARGS += --enable-libmp3lame
 
 # Audio parsers and bitstream filters needed by common transport/container
