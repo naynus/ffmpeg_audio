@@ -51,7 +51,10 @@ fi
 
 validation_dir="$(mktemp -d)"
 trap 'rm -rf "$validation_dir"' EXIT
-tar -xf "$package_file" -C "$validation_dir" package.tgz
+tar -xf "$package_file" -C "$validation_dir" \
+  package.tgz PACKAGE_ICON.PNG PACKAGE_ICON_256.PNG
+test -s "$validation_dir/PACKAGE_ICON.PNG"
+test -s "$validation_dir/PACKAGE_ICON_256.PNG"
 mkdir "$validation_dir/payload"
 tar -xzf "$validation_dir/package.tgz" -C "$validation_dir/payload"
 

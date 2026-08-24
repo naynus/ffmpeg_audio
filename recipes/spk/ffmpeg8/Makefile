@@ -2,6 +2,7 @@ SPK_NAME = ffmpeg8
 SPK_VERS ?= 8.1.2
 SPK_MINOR_VERS = $(firstword $(subst ., ,$(SPK_VERS)))
 SPK_REV ?= 100
+SPK_ICON = src/ffmpeg8.svg
 
 DEPENDS = cross/ffmpeg8
 PLIST_TRANSFORM = grep -v '^bin:bin/lame$$'

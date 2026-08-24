@@ -20,8 +20,9 @@ if [[ ! "$spksrc_ffmpeg_version" =~ ^8\.[0-9]+(\.[0-9]+)?$ ]]; then
   exit 1
 fi
 
-mkdir -p spksrc/spk/ffmpeg8 spksrc/cross/ffmpeg8
+mkdir -p spksrc/spk/ffmpeg8/src spksrc/cross/ffmpeg8
 cp recipes/spk/ffmpeg8/Makefile spksrc/spk/ffmpeg8/Makefile
+cp recipes/spk/ffmpeg8/src/ffmpeg8.svg spksrc/spk/ffmpeg8/src/ffmpeg8.svg
 cp recipes/cross/ffmpeg8/Makefile spksrc/cross/ffmpeg8/Makefile
 cp recipes/cross/ffmpeg8/PLIST spksrc/cross/ffmpeg8/PLIST
 
