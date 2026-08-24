@@ -82,6 +82,13 @@ if [ "$ARCH" = "x64" ]; then
     fi
   done
 
+  decoders="$("$validation_dir/payload/bin/ffmpeg" -hide_banner -decoders)"
+  if ! awk '$2 == "jpegls" { found=1 } END { exit !found }' \
+    <<< "$decoders"; then
+    echo "Required decoder is missing: jpegls" >&2
+    exit 1
+  fi
+
   muxers="$("$validation_dir/payload/bin/ffmpeg" -hide_banner -muxers)"
   for muxer in ipod mov mp4; do
     if ! awk -v name="$muxer" '$2 == name { found=1 } END { exit !found }' \

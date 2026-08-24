@@ -53,8 +53,8 @@ CONFIGURE_ARGS += --enable-demuxer=aac,ac3,adts,aiff,ape,asf,avi,caf,flac,flv,im
 # previews. ipod is the usual muxer selected for .m4a output.
 CONFIGURE_ARGS += --enable-muxer=adts,aiff,caf,flac,image2,image2pipe,ipod,matroska,mp3,mov,mp4,ogg,wav,webm
 
-# Native audio decoders. Video decoders are deliberately absent.
-CONFIGURE_ARGS += --enable-decoder=aac,ac3,alac,ape,bmp,comfortnoise,cook,dca,eac3,flac,g723_1,g729,gif,gsm,ilbc,mjpeg,mp1,mp2,mp3,nellymoser,opus,pcm_alaw,pcm_f16le,pcm_f24le,pcm_f32be,pcm_f32le,pcm_f64be,pcm_f64le,pcm_mulaw,pcm_s16be,pcm_s16le,pcm_s24be,pcm_s24le,pcm_s32be,pcm_s32le,pcm_s64be,pcm_u8,png,s302m,speex,tiff,truehd,tta,vorbis,wavpack,webp,wmalossless,wmav1,wmav2
+# Native audio decoders and the image decoders needed for embedded artwork.
+CONFIGURE_ARGS += --enable-decoder=aac,ac3,alac,ape,bmp,comfortnoise,cook,dca,eac3,flac,g723_1,g729,gif,gsm,ilbc,jpegls,mjpeg,mp1,mp2,mp3,nellymoser,opus,pcm_alaw,pcm_f16le,pcm_f24le,pcm_f32be,pcm_f32le,pcm_f64be,pcm_f64le,pcm_mulaw,pcm_s16be,pcm_s16le,pcm_s24be,pcm_s24le,pcm_s32be,pcm_s32le,pcm_s64be,pcm_u8,png,s302m,speex,tiff,truehd,tta,vorbis,wavpack,webp,wmalossless,wmav1,wmav2
 
 # Native audio encoders. External codec libraries are intentionally omitted
 # except for LAME, which NaviAgent explicitly invokes for MP3 conversion.

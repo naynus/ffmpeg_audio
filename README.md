@@ -15,8 +15,8 @@ The build intentionally does not install or declare:
 It retains the FFmpeg programs and libraries needed to process audio and to
 extract audio streams from common containers such as MP4, MKV, WebM, MPEG-TS,
 Ogg, FLAC, MP3, WAV, AIFF, CAF, and ASF. It also retains the small image
-codec/container subset required for embedded album artwork: JPEG/MJPEG, PNG,
-WebP, GIF, BMP, TIFF, `image2`, and `image2pipe`.
+codec/container subset required for embedded album artwork: JPEG/MJPEG,
+JPEG-LS, PNG, WebP, GIF, BMP, TIFF, `image2`, and `image2pipe`.
 
 ## Important package-name behavior
 
