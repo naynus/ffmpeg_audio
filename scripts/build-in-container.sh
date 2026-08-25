@@ -103,7 +103,14 @@ if [ "$ARCH" = "x64" ]; then
   demuxers="$("$validation_dir/payload/bin/ffmpeg" -hide_banner -demuxers)"
   for demuxer in aac asf flac image2 mov mp3 ogg wav; do
     if ! awk -v name="$demuxer" \
-      '$2 == name { found=1 } END { exit !found }' <<< "$demuxers"; then
+      '{
+        count = split($2, aliases, ",")
+        for (index = 1; index <= count; index++) {
+          if (aliases[index] == name)
+            found = 1
+        }
+      }
+      END { exit !found }' <<< "$demuxers"; then
       echo "Required input demuxer is missing: $demuxer" >&2
       exit 1
     fi
