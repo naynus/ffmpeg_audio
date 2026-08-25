@@ -56,7 +56,7 @@ v<ffmpeg-version>-r<spk-revision>-<architecture>-dsm<toolchain-version>
 For example:
 
 ```text
-v8.1.2-r103-x64-dsm7.2
+v8.1.2-r104-x64-dsm7.2
 ```
 
 The release contains the generated `.spk` file and `build-manifest.txt`.
@@ -148,7 +148,7 @@ docker run --rm \
   -e ARCH=x64 \
   -e TCVERSION=7.2 \
   -e FFMPEG_VERSION=8.1.2 \
-  -e SPK_REV=103 \
+  -e SPK_REV=104 \
   ghcr.io/synocommunity/spksrc:latest \
   /bin/bash /github/workspace/scripts/build-in-container.sh
 ```

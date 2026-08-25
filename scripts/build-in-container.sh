@@ -4,7 +4,7 @@ set -euo pipefail
 : "${ARCH:?ARCH is required}"
 : "${TCVERSION:?TCVERSION is required}"
 : "${FFMPEG_VERSION:?FFMPEG_VERSION is required}"
-: "${SPK_REV:=103}"
+: "${SPK_REV:=104}"
 
 cd /github/workspace/spksrc
 
@@ -55,6 +55,18 @@ tar -xf "$package_file" -C "$validation_dir" \
   package.tgz PACKAGE_ICON.PNG PACKAGE_ICON_256.PNG
 test -s "$validation_dir/PACKAGE_ICON.PNG"
 test -s "$validation_dir/PACKAGE_ICON_256.PNG"
+package_version="$(
+  sed -n 's/^version="\([^"]*\)".*/\1/p' "$validation_dir/INFO"
+)"
+expected_package_version="$FFMPEG_VERSION-$SPK_REV"
+if [ "$package_version" != "$expected_package_version" ]; then
+  echo "SPK metadata version mismatch: expected $expected_package_version, got $package_version" >&2
+  exit 1
+fi
+if [[ "$(basename "$package_file")" != *"_$expected_package_version.spk" ]]; then
+  echo "SPK filename version mismatch: expected suffix _$expected_package_version.spk" >&2
+  exit 1
+fi
 mkdir "$validation_dir/payload"
 tar -xzf "$validation_dir/package.tgz" -C "$validation_dir/payload"
 
@@ -70,8 +82,22 @@ fi
 # x64 packages can be smoke-tested directly in the amd64 build container.
 if [ "$ARCH" = "x64" ]; then
   export LD_LIBRARY_PATH="$validation_dir/payload/lib"
-  "$validation_dir/payload/bin/ffmpeg" -hide_banner -version
-  "$validation_dir/payload/bin/ffprobe" -hide_banner -version
+  ffmpeg_version="$(
+    "$validation_dir/payload/bin/ffmpeg" -hide_banner -version |
+      awk 'NR == 1 { print $3; exit }'
+  )"
+  ffprobe_version="$(
+    "$validation_dir/payload/bin/ffprobe" -hide_banner -version |
+      awk 'NR == 1 { print $3; exit }'
+  )"
+  if [ "$ffmpeg_version" != "$FFMPEG_VERSION" ]; then
+    echo "FFmpeg runtime version mismatch: expected $FFMPEG_VERSION, got $ffmpeg_version" >&2
+    exit 1
+  fi
+  if [ "$ffprobe_version" != "$FFMPEG_VERSION" ]; then
+    echo "FFprobe runtime version mismatch: expected $FFMPEG_VERSION, got $ffprobe_version" >&2
+    exit 1
+  fi
 
   encoders="$("$validation_dir/payload/bin/ffmpeg" -hide_banner -encoders)"
   for encoder in libmp3lame flac aac mjpeg png; do
