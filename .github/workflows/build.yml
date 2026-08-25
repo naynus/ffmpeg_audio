@@ -50,7 +50,7 @@ name: Build minimal FFmpeg 8 SPK
       spk_rev:
         description: SPK revision number
         required: true
-        default: "102"
+        default: "103"
         type: string
       publish_release:
         description: Create a GitHub Release and attach the generated SPK
@@ -92,7 +92,7 @@ jobs:
       ARCH: ${{ inputs.arch || vars.SYNOLOGY_ARCH || 'x64' }}
       TCVERSION: ${{ inputs.tcversion || vars.SYNOLOGY_TCVERSION || '7.2' }}
       SPKSRC_REF: ${{ inputs.spksrc_ref || vars.SPKSRC_REF || 'master' }}
-      SPK_REV: ${{ inputs.spk_rev || vars.SPK_REV || '102' }}
+      SPK_REV: ${{ inputs.spk_rev || vars.SPK_REV || '103' }}
     steps:
       - name: Checkout build overlay
         uses: actions/checkout@v5

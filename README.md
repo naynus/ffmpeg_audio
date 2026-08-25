@@ -16,7 +16,8 @@ It retains the FFmpeg programs and libraries needed to process audio and to
 extract audio streams from common containers such as MP4, MKV, WebM, MPEG-TS,
 Ogg, FLAC, MP3, WAV, AIFF, CAF, and ASF. It also retains the small image
 codec/container subset required for embedded album artwork: JPEG/MJPEG,
-JPEG-LS, PNG, WebP, GIF, BMP, TIFF, `image2`, and `image2pipe`.
+JPEG-LS, PNG, WebP, GIF, BMP, TIFF, `image2`, and `image2pipe`. The CPU
+`scale` filter and native MJPEG encoder are included for artwork conversion.
 
 ## Important package-name behavior
 
@@ -55,7 +56,7 @@ v<ffmpeg-version>-r<spk-revision>-<architecture>-dsm<toolchain-version>
 For example:
 
 ```text
-v8.1.2-r102-x64-dsm7.2
+v8.1.2-r103-x64-dsm7.2
 ```
 
 The release contains the generated `.spk` file and `build-manifest.txt`.
@@ -147,7 +148,7 @@ docker run --rm \
   -e ARCH=x64 \
   -e TCVERSION=7.2 \
   -e FFMPEG_VERSION=8.1.2 \
-  -e SPK_REV=100 \
+  -e SPK_REV=103 \
   ghcr.io/synocommunity/spksrc:latest \
   /bin/bash /github/workspace/scripts/build-in-container.sh
 ```

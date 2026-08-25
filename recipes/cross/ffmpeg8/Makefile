@@ -56,10 +56,11 @@ CONFIGURE_ARGS += --enable-muxer=adts,aiff,caf,flac,image2,image2pipe,ipod,matro
 # Native audio decoders and the image decoders needed for embedded artwork.
 CONFIGURE_ARGS += --enable-decoder=aac,ac3,alac,ape,bmp,comfortnoise,cook,dca,eac3,flac,g723_1,g729,gif,gsm,ilbc,jpegls,mjpeg,mp1,mp2,mp3,nellymoser,opus,pcm_alaw,pcm_f16le,pcm_f24le,pcm_f32be,pcm_f32le,pcm_f64be,pcm_f64le,pcm_mulaw,pcm_s16be,pcm_s16le,pcm_s24be,pcm_s24le,pcm_s32be,pcm_s32le,pcm_s64be,pcm_u8,png,s302m,speex,tiff,truehd,tta,vorbis,wavpack,webp,wmalossless,wmav1,wmav2
 
-# Native audio encoders. External codec libraries are intentionally omitted
-# except for LAME, which NaviAgent explicitly invokes for MP3 conversion.
+# Native audio encoders plus the image encoders used for artwork compatibility.
+# External codec libraries are intentionally omitted except for LAME, which
+# NaviAgent explicitly invokes for MP3 conversion.
 CONFIGURE_ARGS += --enable-encoder=aac,ac3,eac3,flac,mp2,pcm_alaw,pcm_f16be,pcm_f16le,pcm_f24be,pcm_f24le,pcm_f32be,pcm_f32le,pcm_f64be,pcm_f64le,pcm_mulaw,pcm_s16be,pcm_s16le,pcm_s24be,pcm_s24le,pcm_s32be,pcm_s32le,pcm_s64be,pcm_u8
-CONFIGURE_ARGS += --enable-encoder=libmp3lame,png
+CONFIGURE_ARGS += --enable-encoder=libmp3lame,mjpeg,png
 CONFIGURE_ARGS += --enable-libmp3lame
 
 # Audio parsers and bitstream filters needed by common transport/container
@@ -69,8 +70,8 @@ CONFIGURE_ARGS += --enable-bsf=aac_adtstoasc,null
 
 # Audio filters commonly used by server applications.
 CONFIGURE_ARGS += --enable-filter=acopy,afade,afifo,afir,aformat,amix,anull,apad,apulsator,aresample,aselect,asetnsamples,asetpts,asetrate,atempo,atrim,bandpass,bandreject,bass,biquad,channelmap,channelsplit,compand,acompressor,dcshift,dynaudnorm,ebur128,equalizer,extrastereo,firequalizer,highpass,join,lowpass,loudnorm,pan,replaygain,sidechaincompress,silencedetect,silenceremove,stereotools,stereowiden,tiltshelf,treble,volume
-# The ffmpeg CLI selects these core filters even in an audio-focused build.
-CONFIGURE_ARGS += --enable-filter=crop,format,hflip,null,rotate,transpose,trim,vflip
+# Keep the CPU image conversion path for artwork diagnostics and fallback.
+CONFIGURE_ARGS += --enable-filter=crop,format,hflip,null,rotate,scale,transpose,trim,vflip
 
 DEPENDS += cross/lame
 DEPENDS += cross/zlib
