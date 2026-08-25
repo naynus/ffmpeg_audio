@@ -105,8 +105,8 @@ if [ "$ARCH" = "x64" ]; then
     if ! awk -v name="$demuxer" \
       '{
         count = split($2, aliases, ",")
-        for (index = 1; index <= count; index++) {
-          if (aliases[index] == name)
+        for (i = 1; i <= count; i++) {
+          if (aliases[i] == name)
             found = 1
         }
       }
