@@ -1,7 +1,7 @@
 SPK_NAME = ffmpeg8
-SPK_VERS ?= 8.1.2
+SPK_VERS ?= 8.1.3
 SPK_MINOR_VERS = $(firstword $(subst ., ,$(SPK_VERS)))
-SPK_REV ?= 104
+SPK_REV ?= 105
 SPK_ICON = src/ffmpeg8.png
 
 DEPENDS = cross/ffmpeg8

@@ -4,7 +4,7 @@ set -euo pipefail
 : "${ARCH:?ARCH is required}"
 : "${TCVERSION:?TCVERSION is required}"
 : "${FFMPEG_VERSION:?FFMPEG_VERSION is required}"
-: "${SPK_REV:=104}"
+: "${SPK_REV:=105}"
 
 cd /github/workspace/spksrc
 
