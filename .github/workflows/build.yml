@@ -4,6 +4,8 @@ name: Build minimal FFmpeg 8 SPK
   push:
     branches:
       - main
+    tags:
+      - "v*"
     paths:
       - .github/workflows/build.yml
       - recipes/**
@@ -138,25 +140,17 @@ jobs:
         env:
           FFMPEG_VERSION: ${{ steps.resolve-version.outputs.version }}
 
-      - name: Upload SPK
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: ffmpeg8-${{ steps.resolve-version.outputs.version }}-${{ env.ARCH }}-${{ env.TCVERSION }}
-          path: |
-            spksrc/packages/*.spk
-            spksrc/build-manifest.txt
-          if-no-files-found: error
-
       - name: Publish GitHub release
-        if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true
+        if: >-
+          (github.event_name == 'push' && github.ref_type == 'tag') ||
+          (github.event_name == 'workflow_dispatch' && inputs.publish_release == true)
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG_INPUT: ${{ inputs.release_tag || 'auto' }}
+          RELEASE_TAG_INPUT: ${{ github.ref_type == 'tag' && github.ref_name || inputs.release_tag || 'auto' }}
           RELEASE_DRAFT: ${{ inputs.release_draft || false }}
           RELEASE_PRERELEASE: ${{ inputs.release_prerelease || false }}
-          GENERATE_RELEASE_NOTES: ${{ inputs.generate_release_notes }}
+          GENERATE_RELEASE_NOTES: ${{ github.ref_type == 'tag' || inputs.generate_release_notes }}
         run: |
           set -euo pipefail
 

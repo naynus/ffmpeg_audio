@@ -60,8 +60,17 @@ v8.1.3-r105-x64-dsm7.2
 ```
 
 The release contains the generated `.spk` file and `build-manifest.txt`.
-Push and scheduled runs continue to upload Actions artifacts only; they do
-not publish releases.
+
+To publish automatically, push a tag matching `v*`, for example:
+
+```bash
+git tag v8.1.3-r105-x64-dsm7.2
+git push origin v8.1.3-r105-x64-dsm7.2
+```
+
+For a tag push, the workflow uses the pushed tag as the release tag and
+generates release notes automatically. The SPK and manifest are attached
+directly to the GitHub Release; they are not uploaded as Actions artifacts.
 
 Available manual-run release options:
 
@@ -99,7 +108,6 @@ every older FFmpeg 8 tag. For this reason, the manual form does not present
 upstream release tags as supported choices. Select `spksrc` and pin
 `spksrc_ref` to a commit when a reproducible, recipe-matched build is required.
 
-The workflow uploads the resulting SPK and a build manifest as artifacts.
 Use the architecture and DSM version matching the NAS that will install the
 package. A generic package is not produced because the cross-compiled binary
 and its shared libraries are architecture-specific.
